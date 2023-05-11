@@ -28,7 +28,7 @@
 <meta property="og:description" content="Start I literally started this post a minute after putting a temporary period to the previous one on Ray Marching. I really wanted to go on to a second part of ray marching, where we will be trying">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-05-11T10:23:59.000Z">
-<meta property="article:modified_time" content="2023-05-11T10:30:22.261Z">
+<meta property="article:modified_time" content="2023-05-11T16:45:09.071Z">
 <meta property="article:author" content="Leon">
 <meta name="twitter:card" content="summary">
 
@@ -105,7 +105,8 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#start"><span class="nav-number">1.</span> <span class="nav-text">Start</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#subsurface-scattering"><span class="nav-number">2.</span> <span class="nav-text">Subsurface Scattering</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#screen-space-subsurface-scattering"><span class="nav-number">3.</span> <span class="nav-text">Screen-space Subsurface
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#start"><span class="nav-number">1.</span> <span class="nav-text">Start</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#subsurface-scattering"><span class="nav-number">2.</span> <span class="nav-text">Subsurface Scattering</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#path-tracing-subsurface-scattering"><span class="nav-number">3.</span> <span class="nav-text">Path Tracing Subsurface
+Scattering</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#screen-space-subsurface-scattering"><span class="nav-number">4.</span> <span class="nav-text">Screen-space Subsurface
 Scattering</span></a></li></ol></div>
         </div>
         <!--/noindex-->
@@ -183,9 +184,15 @@ Scattering</span></a></li></ol></div>
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2023-05-11 18:23:59 / Modified: 18:30:22" itemprop="dateCreated datePublished" datetime="2023-05-11T18:23:59+08:00">2023-05-11</time>
+      <time title="Created: 2023-05-11 18:23:59" itemprop="dateCreated datePublished" datetime="2023-05-11T18:23:59+08:00">2023-05-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-05-12 00:45:09" itemprop="dateModified" datetime="2023-05-12T00:45:09+08:00">2023-05-12</time>
     </span>
 
   
@@ -205,8 +212,61 @@ marching in screen-space using depth buffer, but I was assigned with a
 task to fix some <strong>SSSSS(Screen-space Subsurface
 Scattering)</strong> demo I wrote a while ago, so here I am. At least
 they are both in screen-space, right?</p>
+<span id="more"></span>
 <h2 id="subsurface-scattering">Subsurface Scattering</h2>
-<p>First let's take a look at what subsurface scattering is.</p>
+<p>When a ray of light hits the surface of an object, it sometimes goes
+into the surface and comes out again after numeral times of scattering
+inside the surface. This phenomenon is called subsurface scattering,
+which is typical for materials such as skin, marble and wax and would
+cause the object to seem translucent.</p>
+<p>In order to describe such a behavior, the <strong>BSSRDF </strong>
+model was introduced. The model comes as a replacement of the original
+<strong>BRDF</strong> model, which describes the outgoing radiance as an
+integral of incoming radiance at the intersection point multiplied with
+a function representing the reflectance over the hemisphere determined
+by the local normal vector. Its successor takes subsurface scattering
+into account by changing the integral into one over the surface of the
+object and each hemisphere determined by the integrated point on the
+surface and the corresponding local normal vector. <span
+class="math display">\[
+L_o=\int_A\int_{2\pi}S(x_i,\vec\omega_i;x_o,\vec\omega_o)L_i(x_i,\vec\omega_i)|\cos\theta_i|d\vec\omega_idA
+\]</span> The <span class="math inline">\(S\)</span> in the equation
+above is the so-called <strong>BSSRDF(Bidirectional Scattering Surface
+Reflectance Distribution Function)</strong>. It can furthermore be
+written as: <span class="math display">\[
+S(x_i,\vec\omega_i;x_o,\vec\omega_o)=S_d(x_i,\vec\omega_i;x_o,\vec\omega_o)+S^{(1)}(x_i,\vec\omega_i;x_o,\vec\omega_o)
+\]</span> The equation above means that the light can leave the surface
+after either many times of scattering or only one. The first term on the
+right-hand-side is the diffusion(multi-scattering) term, which is less
+sensitive to the incoming and outgoing direction than the
+single-scattering term on its right.</p>
+<p>The diffusion term can be expanded again as follows, since the light
+goes through two Fresnel refractions before and after the diffusion.
+<span class="math display">\[
+S_d(x_i,\vec\omega_i;x_o,\vec\omega_o)=\frac1{\pi}F_t(\eta,\vec\omega_i)R_d(||x_i-x_o||)F_t(\eta,\vec\omega_o)
+\]</span> The <span class="math inline">\(R_d\)</span> is the diffusion
+profile, it determines how the radiance attenuates after travelling
+length <span class="math inline">\(||x_i-x_o||\)</span>. It might be
+worth mentioning that I did read about someone questioning the necessity
+of the two Fresnel terms here, but for now I'm going with them.</p>
+<p>A commonly used diffusion profile called <strong>Dipole</strong> is
+derived from the dipole model. I wish I could elaborate but it has been
+ages since I touched physics(and my friend working on nuclear physics
+would get mad at me for saying bullshit), so I'll just give you the
+equation here. <span class="math display">\[
+R(\rho,z_0)=\frac{1}{4\pi}[z_o(\mu_{eff}+\frac{1}{r_1})\frac{e^{-\mu_{eff}r_1}}{r_1^2}+(z_0+2z_b)(\mu_{eff}+\frac{1}{r_2})\frac{e^{-\mu_{eff}r_2}}{r_2^2}]
+\]</span> The Dipole model only takes into consideration the multiple
+scattering part, so the single-scattering term has to be calculated or
+approximated using other methods.</p>
+<p>Another diffusion profile derives from fitting a Monte-Carlo
+simulation of light going straight into a surface. The model is called
+<strong>Normalized BSSRDF</strong>. <span class="math display">\[
+R_d(r)=A\frac{e^{-r/d}+e^{-r/3d}}{8\pi dr}
+\]</span> The change made by BSSRDF upon BRDF means that the outgoing
+radiance is contributed by the incoming radiance at each and every patch
+of the surface, although some patches have little weight.</p>
+<h2 id="path-tracing-subsurface-scattering">Path Tracing Subsurface
+Scattering</h2>
 <ul>
 <li>TODO</li>
 </ul>
