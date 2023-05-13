@@ -29,7 +29,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/2023/05/11/Screen-space-Subsurface-Scattering/deferred%20shading.png">
 <meta property="article:published_time" content="2023-05-11T10:23:59.000Z">
-<meta property="article:modified_time" content="2023-05-13T05:16:14.844Z">
+<meta property="article:modified_time" content="2023-05-13T05:28:47.961Z">
 <meta property="article:author" content="Leon">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/2023/05/11/Screen-space-Subsurface-Scattering/deferred%20shading.png">
@@ -194,7 +194,7 @@ Scattering</span></a></li></ol></div>
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-05-13 13:16:14" itemprop="dateModified" datetime="2023-05-13T13:16:14+08:00">2023-05-13</time>
+      <time title="Modified: 2023-05-13 13:28:47" itemprop="dateModified" datetime="2023-05-13T13:28:47+08:00">2023-05-13</time>
     </span>
 
   
@@ -315,29 +315,28 @@ Scattering</h2>
 the idea that the whole subsurface scattering stuff can be approximated
 as a blurring done to the original diffuse component, which, in prior
 implementations, were done in texture space or by pre-integrating.</p>
-<p>To do the blurring in the screen-space means that we need at least
-two passes for SSSSS:</p>
-<ul>
-<li>Render to G-buffer</li>
-<li>Blur the diffuse component and combine it with the previously
-calculated specular component</li>
-</ul>
 <p>The logic here sounds very similar to that of <strong>Deferred
 Shading</strong>, which is a technique to avoid useless calculation for
 shading fragments that do not pass depth test(or occluded by opaque
 fragments in the front of them, in other words). In depth shading we
 store positions, normal vectors and other data into the G-buffer and
-shade only fragments that eventually pass depth test(because we could
-enable depth test when rendering to the G-buffer in the previous stage).
-Deferred shading has some drawbacks such as being unable to blend or do
-SMAA, but the demo here does not really need such features, so let's
-just go with deferred shading.</p>
+shade only fragments that pass depth test. Deferred shading has some
+drawbacks such as being unable to blend or do SMAA, but the demo here
+does not really need such features, so let's just go with deferred
+shading.</p>
 <p>So as a start, let's build a deferred shading pipeline. For
 convenience, we'll ignore things such as shadow, ambient occlusion and
 so on for now. Let's render the same bunny illuminated by a point light
 at <span class="math inline">\((0.0, 10.0, 0.0)\)</span> with
 emission(color) of <span class="math inline">\((1.0, 1.0,
 1.0)\)</span>.</p>
+<p>The basic idea of the pipeline involves two passes:</p>
+<ol type="1">
+<li>Render the object and store geometry data into the G-buffer as
+textures.</li>
+<li>Render a quad and retrieve geometry data for the current pixel from
+the G-buffer and do the same old shading thing.</li>
+</ol>
 <p>We'll use the Blinn-Phong shading model first, so only position and
 normal would be required. I used a 4-channel texture to store the
 position, with the last channel containing a 0-1 value indicating
@@ -355,6 +354,28 @@ position and normal from textures in the G-buffer.</p>
 <img src="deferred%20shading.png" alt="Deferred Shading" />
 <figcaption aria-hidden="true">Deferred Shading</figcaption>
 </figure>
+<p>Let's go with a somewhat more complicated shading model, say,
+something more PBR here:</p>
+<ul>
+<li>TODO</li>
+</ul>
+<p>So after such a tiring journey, we are finally going to get down to
+the SSS part. But so far here's a problem: in order to do the blurring
+over diffuse component, we would have to store it in a texture(the
+specular can be calculated in the final combining pass no matter what).
+So either we calculate the diffuse component in the first pass and
+include it into our G-buffer, or we invoke one more draw call to use the
+G-buffer to get a diffuse texture. Personally I choose the latter here
+because the first one makes computing the specular component separately
+a little confusing but whether that is beneficial for reducing time cost
+remains to be tested.</p>
+<p>Anyway, the routine now becomes 3 passes:</p>
+<ol type="1">
+<li>Render to G-buffer.</li>
+<li>Use the G-buffer to render diffuse component.</li>
+<li>Blur the diffuse component and combine the blurred result with the
+specular component.</li>
+</ol>
 <ul>
 <li>TODO</li>
 </ul>
