@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Start SSS(Subsurface Scattering) is a very important and interesting topic in rendering, yet it is very tricky because it is computationally costly and not easy to implement as reflection and refr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Subsurface Scattering(Part One)">
+<meta property="og:url" content="http://example.com/2023/05/16/Subsurface-Scattering-Part-One/index.html">
+<meta property="og:site_name" content="Leon Kang&#39;s Blogs">
+<meta property="og:description" content="Start SSS(Subsurface Scattering) is a very important and interesting topic in rendering, yet it is very tricky because it is computationally costly and not easy to implement as reflection and refr">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-05-15T16:37:42.000Z">
+<meta property="article:modified_time" content="2023-05-15T18:07:25.866Z">
+<meta property="article:author" content="Leon">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2023/05/16/Subsurface-Scattering-Part-One/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2023/05/16/Subsurface-Scattering-Part-One/","path":"2023/05/16/Subsurface-Scattering-Part-One/","title":"Subsurface Scattering(Part One)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Subsurface Scattering(Part One) | Leon Kang's Blogs</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Leon Kang's Blogs</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#start"><span class="nav-number">1.</span> <span class="nav-text">Start</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#subsurface-scattering"><span class="nav-number">2.</span> <span class="nav-text">Subsurface Scattering</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a-na%C3%AFve-attempt"><span class="nav-number">3.</span> <span class="nav-text">A Naïve Attempt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#recommended-materials"><span class="nav-number">4.</span> <span class="nav-text">Recommended Materials</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Leon</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LeonKang130" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LeonKang130" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2090093273@qq.com" title="E-Mail → mailto:2090093273@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/16/Subsurface-Scattering-Part-One/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Leon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leon Kang's Blogs">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Subsurface Scattering(Part One) | Leon Kang's Blogs">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Subsurface Scattering(Part One)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2023-05-16 00:37:42 / Modified: 02:07:25" itemprop="dateCreated datePublished" datetime="2023-05-16T00:37:42+08:00">2023-05-16</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="start">Start</h2>
+<p><strong>SSS(Subsurface Scattering)</strong> is a very important and
+interesting topic in rendering, yet it is very tricky because it is
+computationally costly and not easy to implement as reflection and
+refraction, which you have probably dealt with in some path tracing
+homework from your graphics course. SSS makes your objects look
+translucent.</p>
+<span id="more"></span>
+<p>I originally tried to write a post starting from what SSS is all the
+way to <strong>SSSSS(Screen-space Subsurface Scattering)</strong>, but
+at last the post became way too long. In order to avoid such a enormous
+post in my archive, I decided to talk about the topic in several
+separate blogs. Additionally, I myself am still struggling with how to
+implement the screen-space algorithm to correspond to physical
+parameters such as <span class="math inline">\(\sigma_a\)</span> and
+<span class="math inline">\(\sigma_s\)</span> for comparison with other
+methods. I searched on the Internet for how people render things other
+than skin(especially the human head model) with screen-space method but
+found little answer, so I guess this is going to take me some time.</p>
+<p>I know it seems abrupt to jump from Ray Marching to SSS, if any of
+you guys are waiting for a Part Two to my previous post, but I was
+assigned with task to implement SSS algorithms for comparison
+experiment, so here we are.</p>
+<h2 id="subsurface-scattering">Subsurface Scattering</h2>
+<p>When a ray of light hits the surface of an object, it sometimes goes
+into the surface and comes out again after several times of scattering
+inside the surface. This phenomenon is called SSS(subsurface
+scattering), which is typical for materials such as skin, marble and
+wax, and would cause the object to look translucent.</p>
+<p>This effect looks pretty cool but it's also tricky to handle because
+now the radiance going out is contributed by irradiance from all over
+the surface of the object. In order to describe such a behavior, the
+<strong>BSSRDF </strong> model was introduced. The model came as a
+successor of the original <strong>BRDF</strong> model, which is used to
+describe phenomena such as specular and diffuse reflection. The BSSRDF
+model, however, takes subsurface scattering into account by changing the
+form of outgoing radiance as an integral over the surface of the object.
+<span class="math display">\[
+L_o=\int_A\int_{2\pi}S(x_i,\vec\omega_i;x_o,\vec\omega_o)L_i(x_i,\vec\omega_i)|\cos\theta_i|d\vec\omega_idA
+\]</span> The <span class="math inline">\(S\)</span> in the equation
+above is the <strong>BSSRDF(Bidirectional Scattering Surface Reflectance
+Distribution Function)</strong>. It can be further split into two parts:
+<span class="math display">\[
+S(x_i,\vec\omega_i;x_o,\vec\omega_o)=S_d(x_i,\vec\omega_i;x_o,\vec\omega_o)+S^{(1)}(x_i,\vec\omega_i;x_o,\vec\omega_o)
+\]</span> The first term on the right-hand-side is the
+diffusion(multiple scattering) term, which is less sensitive to the
+incoming and outgoing direction than the single-scattering term to its
+right.</p>
+<p>The diffusion term can be written as the following form, since the
+light scattering beneath the surface must go through two refractions to
+enter and exit the surface. <span class="math display">\[
+S_d(x_i,\vec\omega_i;x_o,\vec\omega_o)=\frac1{\pi}F_t(\eta,\vec\omega_i)R_d(||x_i-x_o||)F_t(\eta,\vec\omega_o)
+\]</span> The <span class="math inline">\(R_d\)</span> term is called
+the diffusion profile, which determines how much of the light attenuates
+after travelling distance <span
+class="math inline">\(||x_i-x_o||\)</span> beneath the surface, which
+greatly affects the appearance of the object being rendered.</p>
+<p>A commonly used diffusion profile called <strong>Dipole</strong> is
+derived from the dipole model. I haven't touched physics for ages so
+I'll skip the theory part and directly give you the formula here. <span
+class="math display">\[
+R(\rho,z_0)=\frac{1}{4\pi}[z_o(\mu_{eff}+\frac{1}{r_1})\frac{e^{-\mu_{eff}r_1}}{r_1^2}+(z_0+2z_b)(\mu_{eff}+\frac{1}{r_2})\frac{e^{-\mu_{eff}r_2}}{r_2^2}]
+\]</span> The Dipole model only takes into consideration the
+multiple-scattering part, so the single-scattering part has to be
+handled using other methods.</p>
+<p>Another diffusion profile derives from curves fitting a Monte-Carlo
+simulation of light going straight into a dielectric surface. It is
+called <strong>Normalized BSSRDF</strong>. <span class="math display">\[
+R_d(r)=A\frac{e^{-r/d}+e^{-r/3d}}{8\pi dr}
+\]</span> Normalized BSSRDF is more concise than Dipole and yields
+estimation accurate enough for daily use, albeit its lack of physics
+basis(it's just a parametric curve fitted to data from MC simulation
+after all). There's another interesting thing about Normalized BSSRDF
+that <span class="math display">\[
+\int_0^{2\pi}\int_0^\infty R_d(r)d\theta dr=A
+\]</span> The fractional factor in the expression of <span
+class="math inline">\(R_d(r)\)</span> goes away after integration, hence
+then name "Normalized". The <span class="math inline">\(A\)</span> here
+is the diffuse albedo and <span class="math inline">\(d\)</span> is the
+diffuse mean free path, which both can be calculated using <span
+class="math inline">\(\sigma_a\)</span>, <span
+class="math inline">\(\sigma_s\)</span>, <span
+class="math inline">\(\eta\)</span> and <span
+class="math inline">\(g\)</span>.</p>
+<h2 id="a-naïve-attempt">A Naïve Attempt</h2>
+<p>One simple way to calculate subsurface scattering is to directly
+discretize the BSSRDF integral. <span class="math display">\[
+L_o\approx\sum_{k=1}^NS(x_k;x_o)\Delta
+A\int_{2\pi}L_i(x_k,\vec\omega_i)|\cos\theta_i|d\vec\omega_i
+\]</span> As is described earlier, the multiple-scattering component is
+not very sensitive to the incoming and outgoing direction of the ray, so
+we can presume that the ray goes perpendicular to the surface. We then
+discretize the mesh into vertices each representing a small patch
+containing parts of adjacent triangles. We'll be using these patches to
+calculate radiance leaving each vertex and then use the vertex radiance
+to shade all the fragments.</p>
+<p>An easy approach to evaluate the formula above is to iterate all the
+vertices(patches) on the mesh and sum up their contributions(product of
+irradiance, patch surface area and BSSRDF) to the current vertex, which
+has <span class="math inline">\(O(n^2)\)</span> time complexity where
+<span class="math inline">\(n\)</span> is the number of vertices on the
+mesh.</p>
+<p>To be specific, there are three steps(passes):</p>
+<ol type="1">
+<li>Collect irradiance at each vertex using path tracing, which I
+implemented using <strong>LuisaCompute</strong>. If you do not have
+surface lights in the scene or if you are to calculate irradiance from
+surface lights using LTC, you may change this pass into a compute shader
+call.</li>
+<li>Perform the <span class="math inline">\(O(n^2)\)</span>
+transformation over the array of irradiance at each vertex, which I
+implemented using OpenGL compute shader.</li>
+<li>Use the outgoing radiance at each vertex to shade fragments, which
+can be done using a simple set of vertex-fragment shaders.</li>
+</ol>
+<p>The algorithm is very straight-forward and can be accelerated in many
+ways, like enabling face culling during the third step and MIS in the
+first step. However, I did encounter some problem when implementing the
+Normalized BSSRDF due to the divergence of the formula near <span
+class="math inline">\(r=0\)</span>, which can lead to severe artifacts.
+I ended up setting a minimum of the distance between entering and exit
+point of the light to avoid divergence.</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#version 430 core</span></span><br><span class="line"><span class="keyword">layout</span>(<span class="keyword">local_size_x</span> = <span class="number">1</span>) <span class="keyword">in</span>;</span><br><span class="line"><span class="keyword">layout</span>(<span class="keyword">std430</span>, <span class="keyword">binding</span>=<span class="number">0</span>) <span class="keyword">buffer</span> flux_in</span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">vec4</span> influx[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">layout</span>(<span class="keyword">std430</span>, <span class="keyword">binding</span>=<span class="number">1</span>) <span class="keyword">buffer</span> vertex_in</span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">vec4</span> vertex[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">layout</span>(<span class="keyword">std430</span>, <span class="keyword">binding</span>=<span class="number">2</span>) <span class="keyword">buffer</span> flux_out</span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">vec4</span> efflux[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="type">void</span> main()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> vertex_index = <span class="type">int</span>(<span class="built_in">gl_GlobalInvocationID</span>);</span><br><span class="line">    <span class="type">vec3</span> vertex_position = vertex[vertex_index].xyz;</span><br><span class="line">    <span class="type">vec3</span> acc = <span class="type">vec3</span>(<span class="number">0.0</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; vertex_count; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">float</span> r = <span class="built_in">length</span>(vertex_position - vertex[i].xyz);</span><br><span class="line">        r = <span class="built_in">max</span>(<span class="number">0.02</span>, r);</span><br><span class="line">        <span class="type">vec3</span> a = <span class="built_in">exp</span>(-r / (<span class="number">3.0</span> * dmfp));</span><br><span class="line">        a = (a + a * a * a) / (<span class="number">8.0</span> * <span class="number">3.1415926</span> * dmfp * r);</span><br><span class="line">        acc += influx[i].rgb * a * vertex[i].w; <span class="comment">// w: patch surface area</span></span><br><span class="line">    &#125;</span><br><span class="line">    acc *= albedo * transmittance;</span><br><span class="line">    efflux[vertex_index] = <span class="type">vec4</span>(acc, <span class="number">1.0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>I renamed some variables from my original shader for better
+readability(I made up the )</p>
+<p>If you are interested, you can check out my GitHub repo <a
+target="_blank" rel="noopener" href="https://github.com/LeonKang130/DiscretizedDiffusion">DiscretizedDiffusion</a>.
+I rendered a bunny lit up by a quad light source on the left using
+Dipole. The result looks quite nice(and like some kind of gel).</p>
+<figure>
+<img
+src="https://github.com/LeonKang130/DiscretizedDiffusion/raw/main/result-teaser-dipole.png"
+alt="DiscretizedDiffusion" />
+<figcaption aria-hidden="true">DiscretizedDiffusion</figcaption>
+</figure>
+<h2 id="recommended-materials">Recommended Materials</h2>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Subsurface_scattering">Wikipedia
+Page</a> for SSS.</li>
+<li>A <a
+target="_blank" rel="noopener" href="https://pbr-book.org/3ed-2018/Volume_Scattering/The_BSSRDF">section
+from PBRT</a> on the BSSRDF.</li>
+</ul>
+<p>If you like this post, please wait for the part two of this one,
+where we'll be rendering the same bunny using path tracing(not
+volumetric path tracing but via importance sampling according to the
+Normalized BSSRDF). This is not gonna be a hoax because I've already
+finished the coding part, and you may check out the repository <a
+target="_blank" rel="noopener" href="https://github.com/LeonKang130/NormalizedBSSRDF">here</a>.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/05/11/Ray-Marching-Part-One/" rel="prev" title="Ray Marching(Part One)">
+                  <i class="fa fa-chevron-left"></i> Ray Marching(Part One)
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+  <script class="next-config" data-name="pdf" type="application/json">{"object_url":{"url":"https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.8/pdfobject.min.js","integrity":"sha256-tu9j5pBilBQrWSDePOOajCUdz6hWsid/lBNzK4KgEPM="},"url":"/lib/pdf/web/viewer.html"}</script>
+  <script src="/js/third-party/tags/pdf.js"></script>
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
