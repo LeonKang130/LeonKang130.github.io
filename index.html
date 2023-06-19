@@ -178,7 +178,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2023-06-19 18:57:20 / Modified: 19:42:08" itemprop="dateCreated datePublished" datetime="2023-06-19T18:57:20+08:00">2023-06-19</time>
+      <time title="Created: 2023-06-19 18:57:20 / Modified: 19:54:30" itemprop="dateCreated datePublished" datetime="2023-06-19T18:57:20+08:00">2023-06-19</time>
     </span>
 
   
@@ -209,51 +209,14 @@ few months ago, so I decided to spend a day to write a path tracer
 according to the <a
 target="_blank" rel="noopener" href="https://sotrh.github.io/learn-wgpu/#what-is-wgpu">Learn WGPU
 tutorial</a>.</p>
-<h2 id="a-simple-path-tracer">A Simple Path Tracer</h2>
-<p>If you have not yet written a path tracer before, <a
-target="_blank" rel="noopener" href="http://www.kevinbeason.com/smallpt/">smallpt</a> is probably the
-best starting point for you to run a path tracer on your own PC to see
-what it does.</p>
-<p>In smallpt, the scene being rendered is a modified version of the
-Cornell Box. The walls and the light are all spheres(big enough to
-appear flat), so the implementation can only focus on how to solve for
-the intersection of the ray and a sphere. I used 7 spheres to make
-another modified version of the Cornell Box with a unified material
-which behaves like either a Lambertian diffuse material or a
-perfectly-reflective material according to a constant possibility,
-mimicking the clean coat material.</p>
-<p>Because there are only less than 10 spheres in the scene, I did not
-write a BVH or something like that to accelerate the intersection test.
-A linear search would be good.</p>
-<p>The tracing logic is in the fragment shader, which is in the same
-file as the vertex shader since wgsl(the shading language supported by
-WebGPU) supports shader code from different stages in the same file.</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line">fn intersect(ray: Ray) -&gt; Hit</span><br><span class="line">&#123;</span><br><span class="line">    var hit: Hit;</span><br><span class="line">    hit.primitive_idx = -1;</span><br><span class="line">    hit.t = 1e30;</span><br><span class="line">    for (var i = 0; i &lt; i32(arrayLength(&amp;spheres)); i++)</span><br><span class="line">    &#123;</span><br><span class="line">        let sphere = spheres[i];</span><br><span class="line">        let f = ray.origin - sphere.center;</span><br><span class="line">        let b = -dot(f, ray.direction);</span><br><span class="line">        let l = f + b * ray.direction;</span><br><span class="line">        let delta = sphere.radius * sphere.radius - dot(l, l);</span><br><span class="line">        if (delta &gt; 0.0) &#123;</span><br><span class="line">            let q = b + sign(b) * sqrt(delta);</span><br><span class="line">            let c = dot(f, f) - sphere.radius * sphere.radius;</span><br><span class="line">            let t0 = c / q;</span><br><span class="line">            let t1 = q;</span><br><span class="line">            if (t0 &gt; EPS &amp;&amp; t0 &lt; hit.t) &#123;</span><br><span class="line">                hit.t = t0;</span><br><span class="line">                hit.primitive_idx = i;</span><br><span class="line">            &#125;</span><br><span class="line">            if (t1 &gt; EPS &amp;&amp; t1 &lt; hit.t) &#123;</span><br><span class="line">                hit.t = t1;</span><br><span class="line">                hit.primitive_idx = i;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return hit;</span><br><span class="line">&#125;</span><br><span class="line">fn radiance(ray: Ray) -&gt; vec3&lt;f32&gt;</span><br><span class="line">&#123;</span><br><span class="line">    var ray = ray;</span><br><span class="line">    var acc = vec3&lt;f32&gt;(0.0);</span><br><span class="line">    var amp = vec3&lt;f32&gt;(1.0);</span><br><span class="line">    for (var i = 0; i &lt; MAX_BOUNCE; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        let hit = intersect(ray);</span><br><span class="line">        if (hit.primitive_idx &lt; 0)</span><br><span class="line">        &#123;</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line">        let sphere = spheres[hit.primitive_idx];</span><br><span class="line">        ray.origin += hit.t * ray.direction;</span><br><span class="line">        var normal = normalize(ray.origin - sphere.center);</span><br><span class="line">        normal *= select(1.0, -1.0, dot(ray.direction, normal) &gt; 0.0);</span><br><span class="line">        ray.origin += normal * EPS;</span><br><span class="line">        acc += sphere.emission * amp * PI;</span><br><span class="line">        var u = frand();</span><br><span class="line">        if (u &lt; sphere.clean_coat)</span><br><span class="line">        &#123;</span><br><span class="line">            ray.direction = reflect(ray.direction, normal);</span><br><span class="line">            u /= sphere.clean_coat;</span><br><span class="line">        &#125;</span><br><span class="line">        else</span><br><span class="line">        &#123;</span><br><span class="line">            amp *= sphere.color;</span><br><span class="line">            ray.direction = sample_cosine_hemisphere(normal);</span><br><span class="line">            u = (u - sphere.clean_coat) / (1.0 - sphere.clean_coat);</span><br><span class="line">        &#125;</span><br><span class="line">        let p1 = max(amp.r, max(amp.g, amp.b));</span><br><span class="line">        if (p1 &lt; 1e-2) &#123;</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line">        let p2 = min(amp.r, max(amp.g, amp.b));</span><br><span class="line">        if (i &gt; 6)</span><br><span class="line">        &#123;</span><br><span class="line">            if (u &lt; p2)</span><br><span class="line">            &#123;</span><br><span class="line">                amp *= 1.0 / p2;</span><br><span class="line">            &#125;</span><br><span class="line">            else</span><br><span class="line">            &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return acc;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>More details can be found in my repo <a
-target="_blank" rel="noopener" href="https://github.com/LeonKang130/smallpt">here</a>.</p>
-<p>The final result looks like this:</p>
-<figure>
-<img src="screenshot.png" alt="simple path tracer - screenshot" />
-<figcaption aria-hidden="true">simple path tracer -
-screenshot</figcaption>
-</figure>
-<p>Personally I consider it more exhausting to implement your little
-experimental renderers using wgpu in Rust than moderngl in python, which
-I believe can be attributed to the fact that I'm not yet familiar with
-Rust. However, both of them are concise enough compared to what you
-would have to write when using C++.</p>
-<h2 id="recommended-material">Recommended Material</h2>
-<ul>
-<li><a target="_blank" rel="noopener" href="http://www.kevinbeason.com/smallpt/">smallpt</a>, which is
-a must-read for anyone taking the CG course in my university</li>
-<li><a target="_blank" rel="noopener" href="https://sotrh.github.io/learn-wgpu/#what-is-wgpu">Learn
-WGPU</a></li>
-</ul>
-<p>For the following one week or two, I would try to implement SSAO and
-SSDO(and probably other screen-space global illumination methods), which
-can be regarded as a sequel to the Ray Marching series.</p>
-<p>Thanks for reading this blog and have a great day.</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/06/19/Path-Tracing-Using-Rust-and-WGPU/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
