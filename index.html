@@ -176,9 +176,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2024-01-25 19:08:46 / Modified: 19:30:10" itemprop="dateCreated datePublished" datetime="2024-01-25T19:08:46+08:00">2024-01-25</time>
+      <time title="Created: 2024-01-25 19:08:46" itemprop="dateCreated datePublished" datetime="2024-01-25T19:08:46+08:00">2024-01-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-01-27 09:30:18" itemprop="dateModified" datetime="2024-01-27T09:30:18+08:00">2024-01-27</time>
     </span>
 
   
@@ -191,30 +197,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="motivation---direct-illumination-sampling">Motivation - Direct
-Illumination Sampling</h2>
-<p>After a busy and tiring semester of applying for graduation programs
-and working part-time out of campus at the same time, I have finally
-found some time to restart the blogs. Currently I am working on my
-graduation project, which is about implementing and improving real-time
-ray tracing techniques, and I decided to start from direct illumination
-sampling algorithms, which I may talk about in a later blog. In short, I
-need to organize the lights in a scene, which are basically emissive
-triangular meshes, into probability trees that enable utilizing
-knowledge of the shading point to improve the quality of the generated
-light samples. To build the trees (or BVHs), I need to sort the
-triangles based on 30-bit Morton codes computed using their centroids.
-Theoretically this should not be a problem, but for some reason I have
-to implement the sorting algorithm on my own. Considering that the light
-sampler has to be updated every frame, which means that the budget for
-building my light trees is quite tight, I need to seek for a solution to
-sort the Morton codes as fast as possible. So, naturally, I started
-looking for parallel sorting algorithms on GPU.</p>
-<p>For conciseness and simplicity, let's describe our problem as sorting
-an array of <span class="math inline">\(n\)</span>
-<code>unint32_t</code> keys parallel on the GPU. With this problem
-solved, adapting the solution into building probability trees of lights
-would be trivial.</p>
+          <h2 id="Motivation-Direct-Illumination-Sampling"><a href="#Motivation-Direct-Illumination-Sampling" class="headerlink" title="Motivation - Direct Illumination Sampling"></a>Motivation - Direct Illumination Sampling</h2><p>After a busy and tiring semester of applying for graduation programs and working part-time out of campus at the same time, I have finally found some time to restart the blogs. Currently I am working on my graduation project, which is about implementing and improving real-time ray tracing techniques, and I decided to start from direct illumination sampling algorithms, which I may talk about in a later blog. In short, I need to organize the lights in a scene, which are basically emissive triangular meshes, into probability trees that enable utilizing knowledge of the shading point to improve the quality of the generated light samples. To build the trees (or BVHs), I need to sort the triangles based on 30-bit Morton codes computed using their centroids. Theoretically this should not be a problem, but for some reason I have to implement the sorting algorithm on my own. Considering that the light sampler has to be updated every frame, which means that the budget for building my light trees is quite tight, I need to seek for a solution to sort the Morton codes as fast as possible. So, naturally, I started looking for parallel sorting algorithms on GPU.</p>
+<p>For conciseness and simplicity, let’s describe our problem as sorting an array of $n$ <code>unint32_t</code> keys parallel on the GPU. With this problem solved, adapting the solution into building probability trees of lights would be trivial.</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/01/25/GPU-Sorting-Part-One/#more" rel="contents">
@@ -297,8 +281,7 @@ would be trivial.</p>
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="welcome">Welcome</h2>
-<p>Hello, welcome to my blogs! You can call me Leon.</p>
+          <h2 id="Welcome"><a href="#Welcome" class="headerlink" title="Welcome"></a>Welcome</h2><p>Hello, welcome to my blogs! You can call me Leon.</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/05/10/Welcome-to-My-Blogs/#more" rel="contents">

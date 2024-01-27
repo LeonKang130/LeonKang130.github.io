@@ -20,18 +20,18 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Motivation - Direct Illumination Sampling After a busy and tiring semester of applying for graduation programs and working part-time out of campus at the same time, I have finally found some time">
+    <meta name="description" content="Motivation - Direct Illumination SamplingAfter a busy and tiring semester of applying for graduation programs and working part-time out of campus at the same time, I have finally found some time to re">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GPU Sorting: Part One">
 <meta property="og:url" content="http://example.com/2024/01/25/GPU-Sorting-Part-One/index.html">
 <meta property="og:site_name" content="Leon Kang&#39;s Blogs">
-<meta property="og:description" content="Motivation - Direct Illumination Sampling After a busy and tiring semester of applying for graduation programs and working part-time out of campus at the same time, I have finally found some time">
+<meta property="og:description" content="Motivation - Direct Illumination SamplingAfter a busy and tiring semester of applying for graduation programs and working part-time out of campus at the same time, I have finally found some time to re">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/2024/01/25/GPU-Sorting-Part-One/odd-even-transition-sort.jpg">
 <meta property="og:image" content="http://example.com/2024/01/25/GPU-Sorting-Part-One/odd-even-merge-sort.jpg">
 <meta property="og:image" content="http://example.com/2024/01/25/GPU-Sorting-Part-One/bitonic-merge-sort.jpg">
 <meta property="article:published_time" content="2024-01-25T11:08:46.000Z">
-<meta property="article:modified_time" content="2024-01-25T11:30:10.342Z">
+<meta property="article:modified_time" content="2024-01-27T01:30:18.931Z">
 <meta property="article:author" content="Leon">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/2024/01/25/GPU-Sorting-Part-One/odd-even-transition-sort.jpg">
@@ -109,9 +109,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#motivation---direct-illumination-sampling"><span class="nav-number">1.</span> <span class="nav-text">Motivation - Direct
-Illumination Sampling</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#first-attempt"><span class="nav-number">2.</span> <span class="nav-text">First Attempt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-passes"><span class="nav-number">3.</span> <span class="nav-text">Less passes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fully-utilizing-gpu-resources"><span class="nav-number">4.</span> <span class="nav-text">Fully Utilizing GPU
-Resources</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusion"><span class="nav-number">5.</span> <span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Motivation-Direct-Illumination-Sampling"><span class="nav-number">1.</span> <span class="nav-text">Motivation - Direct Illumination Sampling</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#First-Attempt"><span class="nav-number">2.</span> <span class="nav-text">First Attempt</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fewer-Passes"><span class="nav-number">3.</span> <span class="nav-text">Fewer Passes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fully-Utilizing-GPU-Resources"><span class="nav-number">4.</span> <span class="nav-text">Fully Utilizing GPU Resources</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-number">5.</span> <span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -188,9 +186,15 @@ Resources</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" hr
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2024-01-25 19:08:46 / Modified: 19:30:10" itemprop="dateCreated datePublished" datetime="2024-01-25T19:08:46+08:00">2024-01-25</time>
+      <time title="Created: 2024-01-25 19:08:46" itemprop="dateCreated datePublished" datetime="2024-01-25T19:08:46+08:00">2024-01-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-01-27 09:30:18" itemprop="dateModified" datetime="2024-01-27T09:30:18+08:00">2024-01-27</time>
     </span>
 
   
@@ -202,189 +206,53 @@ Resources</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" hr
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="motivation---direct-illumination-sampling">Motivation - Direct
-Illumination Sampling</h2>
-<p>After a busy and tiring semester of applying for graduation programs
-and working part-time out of campus at the same time, I have finally
-found some time to restart the blogs. Currently I am working on my
-graduation project, which is about implementing and improving real-time
-ray tracing techniques, and I decided to start from direct illumination
-sampling algorithms, which I may talk about in a later blog. In short, I
-need to organize the lights in a scene, which are basically emissive
-triangular meshes, into probability trees that enable utilizing
-knowledge of the shading point to improve the quality of the generated
-light samples. To build the trees (or BVHs), I need to sort the
-triangles based on 30-bit Morton codes computed using their centroids.
-Theoretically this should not be a problem, but for some reason I have
-to implement the sorting algorithm on my own. Considering that the light
-sampler has to be updated every frame, which means that the budget for
-building my light trees is quite tight, I need to seek for a solution to
-sort the Morton codes as fast as possible. So, naturally, I started
-looking for parallel sorting algorithms on GPU.</p>
-<p>For conciseness and simplicity, let's describe our problem as sorting
-an array of <span class="math inline">\(n\)</span>
-<code>unint32_t</code> keys parallel on the GPU. With this problem
-solved, adapting the solution into building probability trees of lights
-would be trivial.</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="Motivation-Direct-Illumination-Sampling"><a href="#Motivation-Direct-Illumination-Sampling" class="headerlink" title="Motivation - Direct Illumination Sampling"></a>Motivation - Direct Illumination Sampling</h2><p>After a busy and tiring semester of applying for graduation programs and working part-time out of campus at the same time, I have finally found some time to restart the blogs. Currently I am working on my graduation project, which is about implementing and improving real-time ray tracing techniques, and I decided to start from direct illumination sampling algorithms, which I may talk about in a later blog. In short, I need to organize the lights in a scene, which are basically emissive triangular meshes, into probability trees that enable utilizing knowledge of the shading point to improve the quality of the generated light samples. To build the trees (or BVHs), I need to sort the triangles based on 30-bit Morton codes computed using their centroids. Theoretically this should not be a problem, but for some reason I have to implement the sorting algorithm on my own. Considering that the light sampler has to be updated every frame, which means that the budget for building my light trees is quite tight, I need to seek for a solution to sort the Morton codes as fast as possible. So, naturally, I started looking for parallel sorting algorithms on GPU.</p>
+<p>For conciseness and simplicity, let’s describe our problem as sorting an array of $n$ <code>unint32_t</code> keys parallel on the GPU. With this problem solved, adapting the solution into building probability trees of lights would be trivial.</p>
 <span id="more"></span>
-<h2 id="first-attempt">First Attempt</h2>
-<p>Sorting algorithms can be categorized based on whether their behavior
-is dependent on the input keys to be sorted. Data-driven ones, such as
-Quicksort, depends largely on the input data. As a matter of fact,
-Quicksort has a worst time complexity of <span
-class="math inline">\(O(n^2)\)</span> when the keys are already in
-order. Data-independent ones, however, are not affected by the orders of
-the input keys. The number of steps (or passes) it takes to sort the
-keys is merely a function of the number of input keys, <span
-class="math inline">\(n\)</span>. This makes them ideal for my case,
-where unstable framerate due to undulatory time cost is not favored.</p>
-<p>Data-independent sorting algorithms, in some ways, are similar to
-digital circuits, or networks. It takes constant time for the input
-signal to propagate through the network. One simple example of such
-networks is the sorting network of <em>odd-even transition sort</em>.
-Here is a picture of the network from <em>GPU Gems 2</em>.</p>
-<figure>
-<img src="odd-even-transition-sort.jpg"
-alt="odd-even transition sort" />
-<figcaption aria-hidden="true">odd-even transition sort</figcaption>
-</figure>
-<p>The arrows in the picture means an operation of <em>comparison and
-swap</em>: we compare the two keys at the two ends of the arrow and swap
-them if the one pointed by the arrow is less than the other.
-<em>Odd-even transition sort</em> can be described as repeating the
-operation of comparing and swapping on keys and their neighbors, slowing
-moving larger keys towards the end of the array and smaller keys towards
-the beginning. If we have <span class="math inline">\(n\)</span> keys
-and the largest is located at index 0 when the data was presented to the
-network, we need <span class="math inline">\(n-1\)</span> passes to move
-it to index <span class="math inline">\(n-1\)</span>, since we can only
-move it by 1 in each pass.</p>
-<p><em>Odd-even transition sort</em> is simple, straightforward and easy
-to parallelize. In fact, we can make each thread compare and swap a pair
-of neighboring keys, which yields <span
-class="math inline">\(n-1\)</span> threads in total. We can assembly the
-threads into warps and blocks, so that the algorithm can be ready to
-roll on a machine. However, our first attempt has a lethal flaw. It is
-obvious that the algorithm has a quadric time complexity, and it takes
-<span class="math inline">\(n-1\)</span> global synchronizations to
-complete sorting. Suppose we are given a bunny mesh consisting of 10,000
-triangles, this means that we need to dispatch the compute shader 9,999
-times to sort them. Without doubt, this would take too much time, making
-us drift even further from achieving real-time ray tracing.</p>
-<h2 id="less-passes">Less passes</h2>
-<p>Another data-independent sorting algorithm is the <em>odd-even merge
-sort</em>. This algorithm <em>sorts</em> the first and second half of
-the sequence and then <em>merges</em> them. It assumes that the number
-of input keys <span class="math inline">\(n\)</span> is a power of 2,
-and the algorithm can be described using recursion. The algorithm has
-two key recursive functions: <em>sort</em> and <em>merge</em>.</p>
-<p>The <em>sort</em> functions operating on <span
-class="math inline">\(n\)</span> keys (<span
-class="math inline">\(x_0,\dots,x_{n-1}\)</span>) works as follows:</p>
+
+<h2 id="First-Attempt"><a href="#First-Attempt" class="headerlink" title="First Attempt"></a>First Attempt</h2><p>Sorting algorithms can be categorized based on whether their behavior is dependent on the input keys to be sorted. Data-driven ones, such as Quicksort, depends largely on the input data. As a matter of fact, Quicksort has a worst time complexity of $O(n^2)$ when the keys are already in order. Data-independent ones, however, are not affected by the orders of the input keys. The number of steps (or passes) it takes to sort the keys is merely a function of the number of input keys, $n$. This makes them ideal for my case, where unstable framerate due to undulatory time cost is not favored.</p>
+<p>Data-independent sorting algorithms, in some ways, are similar to digital circuits, or networks. It takes constant time for the input signal to propagate through the network. One simple example of such networks is the sorting network of <em>odd-even transition sort</em>. Here is a picture of the network from <em>GPU Gems 2</em>.</p>
+<p><img src="/2024/01/25/GPU-Sorting-Part-One/odd-even-transition-sort.jpg" alt="odd-even transition sort"></p>
+<p>The arrows in the picture means an operation of <em>comparison and swap</em>: we compare the two keys at the two ends of the arrow and swap them if the one pointed by the arrow is less than the other. <em>Odd-even transition sort</em> can be described as repeating the operation of comparing and swapping on keys and their neighbors, slowing moving larger keys towards the end of the array and smaller keys towards the beginning. If we have $n$ keys and the largest is located at index 0 when the data was presented to the network, we need $n-1$ passes to move it to index $n-1$, since we can only move it by 1 in each pass.</p>
+<p><em>Odd-even transition sort</em> is simple, straightforward and easy to parallelize. In fact, we can make each thread compare and swap a pair of neighboring keys, which yields $n-1$ threads in total. We can assembly the threads into warps and blocks, so that the algorithm can be ready to roll on a machine. However, our first attempt has a lethal flaw. It is obvious that the algorithm has a quadric time complexity, and it takes $n-1$ global synchronizations to complete sorting. Suppose we are given a bunny mesh consisting of 10,000 triangles, this means that we need to dispatch the compute shader 9,999 times to sort them. Without doubt, this would take too much time, making us drift even further from achieving real-time ray tracing.</p>
+<h2 id="Fewer-Passes"><a href="#Fewer-Passes" class="headerlink" title="Fewer Passes"></a>Fewer Passes</h2><p>Another data-independent sorting algorithm is the <em>odd-even merge sort</em>. This algorithm <em>sorts</em> the first and second half of the sequence and then <em>merges</em> them. It assumes that the number of input keys $n$ is a power of 2, and the algorithm can be described using recursion. The algorithm has two key recursive functions: <em>sort</em> and <em>merge</em>.</p>
+<p>The <em>sort</em> functions operating on $n$ keys ($x_0,\dots,x_{n-1}$) works as follows:</p>
 <ul>
-<li>if <span class="math inline">\(n\gt2\)</span> then
-<ul>
+<li>if $n\gt2$ then<ul>
 <li><em>sort</em> the two halves and <em>merge</em> them</li>
-</ul></li>
+</ul>
+</li>
 <li>otherwise, sorting should be trivial</li>
 </ul>
-<p>The <em>merge</em> functions operating on <span
-class="math inline">\(n\)</span> keys works as follows:</p>
+<p>The <em>merge</em> functions operating on $n$ keys works as follows:</p>
 <ul>
-<li>if <span class="math inline">\(n\gt2\)</span> then
-<ul>
+<li>if $n\gt2$ then<ul>
 <li><em>merge</em> the odd and even parts of the sequence</li>
-<li>compare and swap <span class="math inline">\((x_i,x_{i+1})\)</span>
-for all <span
-class="math inline">\(i\in\{1,3,5,\cdots,n-3\}\)</span></li>
-</ul></li>
+<li>compare and swap $(x_i,x_{i+1})$ for all $i\in{1,3,5,\cdots,n-3}$</li>
+</ul>
+</li>
 <li>otherwise, merging should be trivial</li>
 </ul>
 <p>The sorting network of algorithm looks like follows:</p>
-<figure>
-<img src="odd-even-merge-sort.jpg" alt="odd-even merge sort" />
-<figcaption aria-hidden="true">odd-even merge sort</figcaption>
-</figure>
-<p><em>Odd-even merge sort</em> on <span
-class="math inline">\(n\)</span> elements takes <span
-class="math inline">\(O(\log^2(n))\)</span> passes, which is derived
-from the fact that we have <span
-class="math inline">\(O(\log(n))\)</span> stages and stage <span
-class="math inline">\(i\)</span> consists of <span
-class="math inline">\(i\)</span> passes. It is much better than the
-previous <span class="math inline">\(O(n)\)</span>. However, one problem
-about the sorting network of the <em>odd-even merge sort</em> is that we
-do not seem to fully utilize the threads in the later passes of each
-stage. More than half of the threads are inactive from the second pass
-of each stage until the last. Additionally, <em>odd-even merge sort</em>
-uses too much branching, which is not ideal on GPU.</p>
-<h2 id="fully-utilizing-gpu-resources">Fully Utilizing GPU
-Resources</h2>
-<p>The <em>bitonic merge sort</em> builds both an ascending and a
-descending subsequence of keys and then merges the two subsequences. The
-sorting network of this algorithm is presented below:</p>
-<figure>
-<img src="bitonic-merge-sort.jpg" alt="bitonic merge sort" />
-<figcaption aria-hidden="true">bitonic merge sort</figcaption>
-</figure>
-<p>This network has <span class="math inline">\(\log(n)\)</span> sorting
-stages, where the <span class="math inline">\(i\)</span>-th stage has to
-perform <span class="math inline">\(i\)</span> passes, which means that
-the complexity of this algorithm is the same as the <em>odd-even merge
-sort</em>. However, as we can see, the network is more regular and every
-thread has something to do. We can launch same number of threads for
-each pass, unlike in the <em>odd-even merge sort</em> where active
-threads decrease by half in the earlier passes of each stage.</p>
-<p>I was able to find the example code from <a
-target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bitonic_sorter">Wikipedia</a>.</p>
+<p><img src="/2024/01/25/GPU-Sorting-Part-One/odd-even-merge-sort.jpg" alt="odd-even merge sort"></p>
+<p><em>Odd-even merge sort</em> on $n$ elements takes $O(\log^2(n))$ passes, which is derived from the fact that we have $O(\log(n))$ stages and stage $i$ consists of $i$ passes. It is much better than the previous $O(n)$. However, one problem about the sorting network of the <em>odd-even merge sort</em> is that we do not seem to fully utilize the threads in the later passes of each stage. More than half of the threads are inactive from the second pass of each stage until the last. Additionally, <em>odd-even merge sort</em> uses too much branching, which is not ideal on GPU.</p>
+<h2 id="Fully-Utilizing-GPU-Resources"><a href="#Fully-Utilizing-GPU-Resources" class="headerlink" title="Fully Utilizing GPU Resources"></a>Fully Utilizing GPU Resources</h2><p>The <em>bitonic merge sort</em> builds both an ascending and a descending subsequence of keys and then merges the two subsequences. The sorting network of this algorithm is presented below:</p>
+<p><img src="/2024/01/25/GPU-Sorting-Part-One/bitonic-merge-sort.jpg" alt="bitonic merge sort"></p>
+<p>This network has $\log(n)$ sorting stages, where the $i$-th stage has to perform $i$ passes, which means that the complexity of this algorithm is the same as the <em>odd-even merge sort</em>. However, as we can see, the network is more regular and every thread has something to do. We can launch same number of threads for each pass, unlike in the <em>odd-even merge sort</em> where active threads decrease by half in the earlier passes of each stage.</p>
+<p>I was able to find the example code from <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bitonic_sorter">Wikipedia</a>.</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> k = <span class="number">2</span>; k &lt;= n; k &lt;&lt;= <span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> j = k &gt;&gt; <span class="number">1</span>; j != <span class="number">0</span>; j &gt;&gt;= <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">auto</span> l = i ^ j;</span><br><span class="line">            <span class="keyword">if</span> (l &gt; i) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((i &amp; k == <span class="number">0</span> &amp;&amp; arr[i] &gt; arr[l]) || (i &amp; k != <span class="number">0</span> &amp;&amp; arr[i] &lt; arr[l])) &#123;</span><br><span class="line">                    <span class="comment">// swap the two elements</span></span><br><span class="line">                    <span class="keyword">auto</span> temp = arr[i];</span><br><span class="line">                    arr[i] = arr[l];</span><br><span class="line">                    arr[l] = temp;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Basically what we want to do is to parallelize each inmost loop by
-assigning the operations to threads. Then the two outer loops would
-yield <span class="math inline">\(\log_2^2(n)\)</span> passes
-altogether.</p>
-<h2 id="conclusion">Conclusion</h2>
-<p>In fact, as mentioned in <a
-target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3384543">Real-Time Stochastic
-Lightcuts</a>, a parallel bitonic sort was applied to sort the Morton
-codes. So now we already have a solution for the problem that motivated
-my look into parallel sorting algorithms on the GPU.</p>
-<p>However, the article from <em>GPU Gems 2</em> I referred to for this
-blog was published so early that the implementations were presented in
-GLSL fragment shaders instead of compute shaders. I do believe that with
-the underlying machine and API updated over the years, the performance
-of the parallelized implementations would be better than in 2005, but
-what concerns me is that:</p>
+
+<p>Basically what we want to do is to parallelize each inmost loop by assigning the operations to threads. Then the two outer loops would yield $\log_2^2(n)$ passes altogether.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>In fact, as mentioned in <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3384543">Real-Time Stochastic Lightcuts</a>, a parallel bitonic sort was applied to sort the Morton codes. So now we already have a solution for the problem that motivated my look into parallel sorting algorithms on the GPU.</p>
+<p>However, the article from <em>GPU Gems 2</em> I referred to for this blog was published so early that the implementations were presented in GLSL fragment shaders instead of compute shaders. I do believe that with the underlying machine and API updated over the years, the performance of the parallelized implementations would be better than in 2005, but what concerns me is that:</p>
 <ul>
-<li>both <em>bitonic merge sort</em> and <em>odd-even merge sort</em>
-can only handle <span class="math inline">\(n\)</span> keys where <span
-class="math inline">\(n\)</span> is a power of two, which means that in
-most cases we will have to reluctantly ceil our arbitrary <span
-class="math inline">\(n\)</span> to the closest power of 2.</li>
-<li>the performance measurements provided in the original article are
-quite concerning, where <code>std::sort</code> seems to beat both of the
-two parallel implementations when <span class="math inline">\(n\)</span>
-is large enough.</li>
+<li>both <em>bitonic merge sort</em> and <em>odd-even merge sort</em> can only handle $n$ keys where $n$ is a power of two, which means that in most cases we will have to reluctantly ceil our arbitrary $n$ to the closest power of 2.</li>
+<li>the performance measurements provided in the original article are quite concerning, where <code>std::sort</code> seems to beat both of the two parallel implementations when $n$ is large enough.</li>
 </ul>
-<p>Moreover, a naïve implementation of the <em>odd-even merge sort</em>
-and <em>bitonic merge sort</em> does not seem to be able to utilize
-resources such as shared memory or intrinsic functionalities provided by
-the machine, which usually makes a lot of differences when performance
-is what you are after. Maybe there is a way to sort segments of the
-input keys within blocks and then merge the sorted segments, making it
-possible to exploit memory locality and reduce the number of passes it
-takes to put the keys in order.</p>
-<p>These problems make me want to dig even deeper into the realm of
-parallel sorting on GPU to see if better strategies have been proposed
-since 2005. So this blog is just the beginning of my series on GPU
-sorting algorithms.</p>
+<p>Moreover, a naïve implementation of the <em>odd-even merge sort</em> and <em>bitonic merge sort</em> does not seem to be able to utilize resources such as shared memory or intrinsic functionalities provided by the machine, which usually makes a lot of differences when performance is what you are after. Maybe there is a way to sort segments of the input keys within blocks and then merge the sorted segments, making it possible to exploit memory locality and reduce the number of passes it takes to put the keys in order.</p>
+<p>These problems make me want to dig even deeper into the realm of parallel sorting on GPU to see if better strategies have been proposed since 2005. So this blog is just the beginning of my series on GPU sorting algorithms.</p>
 <p>Anyway, thanks for reading my blog. Have a good day!</p>
-<h2 id="reference">Reference</h2>
-<p>For this blog, I referred to <a
-target="_blank" rel="noopener" href="https://developer.nvidia.com/gpugems/gpugems2/part-vi-simulation-and-numerical-algorithms/chapter-46-improved-gpu-sorting">Chapter
-46 of GPU Gems 2</a>. The article provided example code in GLSL and
-measurements of performance. If you are interested in this topic, I
-highly recommend you go checking the original article for more
-innovation.</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>For this blog, I referred to <a target="_blank" rel="noopener" href="https://developer.nvidia.com/gpugems/gpugems2/part-vi-simulation-and-numerical-algorithms/chapter-46-improved-gpu-sorting">Chapter 46 of GPU Gems 2</a>. The article provided example code in GLSL and measurements of performance. If you are interested in this topic, I highly recommend you go checking the original article for more innovation.</p>
 
     </div>
 
