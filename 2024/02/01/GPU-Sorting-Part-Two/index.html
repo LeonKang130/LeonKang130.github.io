@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Can We Do Better? In the last blog we talked about the odd-even merge sort and bitonic merge sort from GPU Gems 2. These two share the same time complexity of \(O(n\log^2(n))\) and both take \(O(\l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GPU Sorting: Part Two">
+<meta property="og:url" content="http://example.com/2024/02/01/GPU-Sorting-Part-Two/index.html">
+<meta property="og:site_name" content="Leon Kang&#39;s Blogs">
+<meta property="og:description" content="Can We Do Better? In the last blog we talked about the odd-even merge sort and bitonic merge sort from GPU Gems 2. These two share the same time complexity of \(O(n\log^2(n))\) and both take \(O(\l">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2024/02/01/GPU-Sorting-Part-Two/radix-sort.png">
+<meta property="article:published_time" content="2024-02-01T13:12:02.000Z">
+<meta property="article:modified_time" content="2024-02-01T13:13:57.187Z">
+<meta property="article:author" content="Leon">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2024/02/01/GPU-Sorting-Part-Two/radix-sort.png">
+
+
+<link rel="canonical" href="http://example.com/2024/02/01/GPU-Sorting-Part-Two/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/02/01/GPU-Sorting-Part-Two/","path":"2024/02/01/GPU-Sorting-Part-Two/","title":"GPU Sorting: Part Two"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>GPU Sorting: Part Two | Leon Kang's Blogs</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Leon Kang's Blogs</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#can-we-do-better"><span class="nav-number">1.</span> <span class="nav-text">Can We Do Better?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#less-global-synchronization"><span class="nav-number">2.</span> <span class="nav-text">Less Global Synchronization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#improving-tile-level-sorting"><span class="nav-number">3.</span> <span class="nav-text">Improving Tile-level Sorting</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Leon</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LeonKang130" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LeonKang130" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2090093273@qq.com" title="E-Mail → mailto:2090093273@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/02/01/GPU-Sorting-Part-Two/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Leon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leon Kang's Blogs">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="GPU Sorting: Part Two | Leon Kang's Blogs">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GPU Sorting: Part Two
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-02-01 21:12:02 / Modified: 21:13:57" itemprop="dateCreated datePublished" datetime="2024-02-01T21:12:02+08:00">2024-02-01</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="can-we-do-better">Can We Do Better?</h2>
+<p>In the last blog we talked about the <em>odd-even merge sort</em> and
+<em>bitonic merge sort</em> from <em>GPU Gems 2</em>. These two share
+the same time complexity of <span
+class="math inline">\(O(n\log^2(n))\)</span> and both take <span
+class="math inline">\(O(\log(n))\)</span> passes to put the <span
+class="math inline">\(n\)</span> keys in order, where <span
+class="math inline">\(n\)</span> is restricted to a power of 2. However,
+we didn't quite put these algorithms under scrutiny with the underlying
+hardware in the context.</p>
+<p>Part of the reason is that when <em>GPU Gems 2</em> came out, there
+was not yet support for finer control of the hardware. Handy tools like
+CUDA did not appear until 2007. However, today even in GLSL shaders we
+are able to make use of shared memory and workgroup intrinsics. With
+these new toys in hand, we are definitely able to do better, at least
+than what we got in the last blog.</p>
+<span id="more"></span>
+<h2 id="less-global-synchronization">Less Global Synchronization</h2>
+<p>Recall that in both sorting algorithms we perform <span
+class="math inline">\(\log_2(n)\)</span> stages. In the <span
+class="math inline">\(i\)</span>-th stage, where <span
+class="math inline">\(i\in\{1,\dots,\log_2(n)\}\)</span>, we merge two
+subsequences of <span class="math inline">\(2^{i-1}\)</span> keys into a
+sorted segment of length <span class="math inline">\(2^i\)</span>. This,
+however, means that tiles of input data do not interact with each other
+until a certain stage merges them in pairs.</p>
+<p>Suppose we assemble the threads into blocks of size 256. Considering
+that each thread compares and swaps two keys at a time, we can
+respectively split the input keys into tiles of 512. So that until the
+10th stage where we merge two 512-tiles into a subsequence of 1024 keys,
+the operations performed on the <span
+class="math inline">\(\frac{n}{512}\)</span> tiles are independent of
+one another.</p>
+<p>More recent APIs provide us the ability to synchronize the threads
+only within the thread block (or workgroup), by calling functions such
+as <code>__syncthreads()</code> in CUDA and <code>barrier()</code> in
+GLSL. With that in hand, we can sort the 512-tiles <em>in only 1 pass
+instead of 9</em>. Now when we take a look back at the algorithm, the
+routine changes into something like follows:</p>
+<ul>
+<li>use the original <em>odd-even merge sort</em> or <em>bitonic merge
+sort</em> to sort the tiles in 1 pass</li>
+<li>perform the larger stages to gradually merge the sorted tiles</li>
+</ul>
+<p>Additionally, since now we only need to sort the keys locally, we are
+able to exploit more performance from the increased locality. We only
+need to read from the slow global memory once when we first load the
+keys and only write back to global memory once after we have each tile
+fully sorted. The keys can be stored in shared memory or registers
+during the process of tile-level sorting. Suppose we store them in the
+shared memory, and we have at most 48kB shared memory for each thread
+block, then we can make each tile as large as 8k, which is large enough
+to contain the Morton codes generated from small triangular meshes. In
+this case, we can even skip the tile-merging part and complete sorting
+just in one pass.</p>
+<p>If shuffling intrinsics are available in the environment you are
+working in, you can even store the values just in registers and use
+shuffling to exchange them between threads. Favoring registers over
+shared memory could potentially bring about more performance boost since
+the registers could be faster to access.</p>
+<h2 id="improving-tile-level-sorting">Improving Tile-level Sorting</h2>
+<p>So a while ago when I was working part-time at Tachi Graphics, I did
+a little research into the GPU prefix sum problem. <em>GPU Gems 3</em>
+was one of the literatures I looked into. However, it was just a few
+days ago that I realized that there was a parallel sorting algorithm
+described in the exact chapter on prefix sum. GPU prefix sum is an
+important yet intricated problem and shows up frequently in rendering as
+an infrastructure. Since we are focusing on sorting algorithms right
+now, I am not going to elaborate on that topic, but I <em>will</em>
+write about it in a future series.</p>
+<p>The article in <em>GPU Gems 3</em> proposed to sort chunks of the
+input array using <strong>radix sort</strong> and then use parallel
+bitonic merge to combine the chunks into one. The size of the chunks are
+chosen as large as can fit into the shared memory. The only difference
+between this method and the one we discussed in the earlier section is
+basically just that we now replace the first pass with a chunk-level
+radix sort pass.</p>
+<p>Radix sort reorders the items based on a certain bit, placing ones
+with the bit being 0 ahead and ones with 1 back, and then moves on to
+the next bit until all bits of the key have been used for reordering. So
+essentially for sorting an array of 32-bit keys, we would need to run
+the algorithm 32 times. Since we are doing the reordering within blocks,
+we are able to synchronize within the block after each reordering
+routine, so that we can actually finish the block-level sorting in just
+one pass. One point worth noticing is that since now the times we run
+the reordering routine equals the number of bits of our input keys,
+radix sort would be a better idea for sorting short keys like
+<code>uint8_t</code> or <code>uint16_t</code> than the algorithms we
+applied previously.</p>
+<figure>
+<img src="radix-sort.png" alt="1-bit radix sort" />
+<figcaption aria-hidden="true">1-bit radix sort</figcaption>
+</figure>
+<p>Using warp intrinsics provided in languages or extensions of the
+languages such as CUDA, GLSL and so on, we just need a register
+<code>reg1</code> containing 1 if the currently inspected bit of the
+thread's key is 0 and 0 if otherwise. If functions such as
+<code>__reduce_add_sync</code> in CUDA are available, the prefix sum of
+these values within the warp can be get without effort. If there is no
+direct function call that works as a prefix sum, we can then apply the
+method in <em>GPU Gems 3</em> and combine it with shuffling intrinsics
+(if available). By computing the warp-level prefix sum we can also
+obtain the number of keys with 0 and 1 bits within the current warp, and
+an exclusive prefix sum of these values across the warps within the
+current block would yield the offset to be added to the warp-level local
+index. If you still have any doubt, please refer to <a
+target="_blank" rel="noopener" href="https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing/chapter-39-parallel-prefix-sum-scan-cuda">this
+article</a> from <em>GPU Gems 3</em>, where a full explanation of how we
+can obtain the local index within the current tile using prefix sum
+results can be found.</p>
+<h2 id="reference">Reference</h2>
+<p>For this blog, I referred to Chapter 39 of <em>GPU Gems 3</em>, whose
+link is available in the previous section.</p>
+<p>The radix-then-bitonic solution may perform better than pure
+<em>bitonic merge sort</em>, since it is more compute efficient than the
+latter. However, its performance would still regress to that of the
+latter as the input array grows larger, since the size of the tiles
+cannot grow unbounded. In the next blog, I will write about how we can
+shift to a full radix sort, which runs constant number of passes.</p>
+<p>Anyway, thanks for your time and have a nice day!</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/01/25/GPU-Sorting-Part-One/" rel="prev" title="GPU Sorting: Part One">
+                  <i class="fa fa-chevron-left"></i> GPU Sorting: Part One
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+  <script class="next-config" data-name="pdf" type="application/json">{"object_url":{"url":"https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.8/pdfobject.min.js","integrity":"sha256-tu9j5pBilBQrWSDePOOajCUdz6hWsid/lBNzK4KgEPM="},"url":"/lib/pdf/web/viewer.html"}</script>
+  <script src="/js/third-party/tags/pdf.js"></script>
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

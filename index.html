@@ -113,7 +113,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -139,6 +139,98 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/02/01/GPU-Sorting-Part-Two/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Leon">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leon Kang's Blogs">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Leon Kang's Blogs">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/02/01/GPU-Sorting-Part-Two/" class="post-title-link" itemprop="url">GPU Sorting: Part Two</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-02-01 21:12:02 / Modified: 21:13:57" itemprop="dateCreated datePublished" datetime="2024-02-01T21:12:02+08:00">2024-02-01</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="can-we-do-better">Can We Do Better?</h2>
+<p>In the last blog we talked about the <em>odd-even merge sort</em> and
+<em>bitonic merge sort</em> from <em>GPU Gems 2</em>. These two share
+the same time complexity of <span
+class="math inline">\(O(n\log^2(n))\)</span> and both take <span
+class="math inline">\(O(\log(n))\)</span> passes to put the <span
+class="math inline">\(n\)</span> keys in order, where <span
+class="math inline">\(n\)</span> is restricted to a power of 2. However,
+we didn't quite put these algorithms under scrutiny with the underlying
+hardware in the context.</p>
+<p>Part of the reason is that when <em>GPU Gems 2</em> came out, there
+was not yet support for finer control of the hardware. Handy tools like
+CUDA did not appear until 2007. However, today even in GLSL shaders we
+are able to make use of shared memory and workgroup intrinsics. With
+these new toys in hand, we are definitely able to do better, at least
+than what we got in the last blog.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/02/01/GPU-Sorting-Part-Two/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -197,8 +289,30 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="Motivation-Direct-Illumination-Sampling"><a href="#Motivation-Direct-Illumination-Sampling" class="headerlink" title="Motivation - Direct Illumination Sampling"></a>Motivation - Direct Illumination Sampling</h2><p>After a busy and tiring semester of applying for graduation programs and working part-time out of campus at the same time, I have finally found some time to restart the blogs. Currently I am working on my graduation project, which is about implementing and improving real-time ray tracing techniques, and I decided to start from direct illumination sampling algorithms, which I may talk about in a later blog. In short, I need to organize the lights in a scene, which are basically emissive triangular meshes, into probability trees that enable utilizing knowledge of the shading point to improve the quality of the generated light samples. To build the trees (or BVHs), I need to sort the triangles based on 30-bit Morton codes computed using their centroids. Theoretically this should not be a problem, but for some reason I have to implement the sorting algorithm on my own. Considering that the light sampler has to be updated every frame, which means that the budget for building my light trees is quite tight, I need to seek for a solution to sort the Morton codes as fast as possible. So, naturally, I started looking for parallel sorting algorithms on GPU.</p>
-<p>For conciseness and simplicity, let’s describe our problem as sorting an array of $n$ <code>unint32_t</code> keys parallel on the GPU. With this problem solved, adapting the solution into building probability trees of lights would be trivial.</p>
+          <h2 id="motivation---direct-illumination-sampling">Motivation - Direct
+Illumination Sampling</h2>
+<p>After a busy and tiring semester of applying for graduation programs
+and working part-time out of campus at the same time, I have finally
+found some time to restart the blogs. Currently I am working on my
+graduation project, which is about implementing and improving real-time
+ray tracing techniques, and I decided to start from direct illumination
+sampling algorithms, which I may talk about in a later blog. In short, I
+need to organize the lights in a scene, which are basically emissive
+triangular meshes, into probability trees that enable utilizing
+knowledge of the shading point to improve the quality of the generated
+light samples. To build the trees (or BVHs), I need to sort the
+triangles based on 30-bit Morton codes computed using their centroids.
+Theoretically this should not be a problem, but for some reason I have
+to implement the sorting algorithm on my own. Considering that the light
+sampler has to be updated every frame, which means that the budget for
+building my light trees is quite tight, I need to seek for a solution to
+sort the Morton codes as fast as possible. So, naturally, I started
+looking for parallel sorting algorithms on GPU.</p>
+<p>For conciseness and simplicity, let's describe our problem as sorting
+an array of <span class="math inline">\(n\)</span>
+<code>unint32_t</code> keys parallel on the GPU. With this problem
+solved, adapting the solution into building probability trees of lights
+would be trivial.</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/01/25/GPU-Sorting-Part-One/#more" rel="contents">
@@ -281,7 +395,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="Welcome"><a href="#Welcome" class="headerlink" title="Welcome"></a>Welcome</h2><p>Hello, welcome to my blogs! You can call me Leon.</p>
+          <h2 id="welcome">Welcome</h2>
+<p>Hello, welcome to my blogs! You can call me Leon.</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/05/10/Welcome-to-My-Blogs/#more" rel="contents">
