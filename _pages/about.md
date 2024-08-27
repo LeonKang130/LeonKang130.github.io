@@ -15,6 +15,9 @@ I am also interested in game development.
 
 Selected Experience
 ======
+Research
+------
+From 2022 to 2024, I worked as a **Student Researcher** at Tsinghua University under the supervision of Prof. Kun Xu. I participated in research projects involving **image vectorization** and **subsurface scattering**.
 
 Internships
 ------
