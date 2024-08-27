@@ -8,7 +8,9 @@ redirect_from:
 ---
 
 I am a first-year graduate student at University of California, Santa Barbara.
+
 My research interests include real-time rendering and ray tracing.
+
 I am also interested in game development.
 
 Selected Experience
@@ -17,4 +19,5 @@ Selected Experience
 Internships
 ------
 In the summer of 2023, I worked as an Algorithm Strategy Intern in the Autocar Department of Meituan, where I worked on high-performance lidar occlusion data processing via **parallel BVH construction on GPU**.
+
 In the fall of 2023, I worked as an intern in the Simulation & Research Department of Taichi Graphics, where I contributed to their cloud renderer, [Taitopia](https://taitopia.design/), adding features such as **volumetric rendering** and **photon mapping**.
