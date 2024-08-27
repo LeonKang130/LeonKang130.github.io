@@ -1,7 +1,7 @@
 ---
 title: "Image vectorization and editing via linear gradient layer decomposition"
 collection: publications
-category: manuscripts
+category: conference
 permalink: /publication/2023-07-26-image-vectorization
 excerpt: 'An automatic method to convert a raster image into layered regions of linear gradients.'
 date: 2023-07-26
