@@ -5,7 +5,7 @@ category: manuscripts
 permalink: /publication/2023-07-26-image-vectorization
 excerpt: 'An automatic method to convert a raster image into layered regions of linear gradients.'
 date: 2023-07-26
-venue: 'ACM Transactions on Graphics (TOG)'
+venue: 'ACM SIGGRAPH North America 2023 (Journal Papers) and ACM Transactions on Graphics (TOG)'
 paperurl: 'https://dl.acm.org/doi/pdf/10.1145/3592128'
 citation: 'Zheng-Jun Du, Liang-Fu Kang, Jianchao Tan, Yotam Gingold, and Kun Xu. 2023. Image vectorization and editing via linear gradient layer decomposition. ACM Trans. Graph. 42, 4, Article 97 (August 2023), 13 pages. https://doi.org/10.1145/3592128'
 ---
