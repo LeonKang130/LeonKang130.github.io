@@ -4,8 +4,8 @@ date: 2024-09-15
 permalink: /posts/2024/09/fs-red-black-tree
 excerpt: 'Implementing red-black trees with insertion and deletion in F#.'
 tags:
-  - F#
-  - Algorithms and Data Structures
+  - F\#
+  - Algorithms
 ---
 
 Red-black trees
