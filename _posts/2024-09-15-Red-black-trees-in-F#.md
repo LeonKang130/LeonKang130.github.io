@@ -2,6 +2,7 @@
 title: 'Red black trees in F#'
 date: 2024-09-15
 permalink: /posts/2024/09/fs-red-black-tree
+excerpt: 'Implementing red-black trees with insertion and deletion in F#.'
 tags:
   - F#
   - Algorithms and Data Structures
@@ -82,6 +83,8 @@ type 'a RedBlackTree =
 ```
 
 The algorithm first considers the cases where the removed node is indeed on the fringe. Then for the cases where the nodes to remove are internal, it would swap it with its successor in the in-order traversal of the tree. Since this successor node contains the smallest element of the current node's right subtree, it must be  located on the fringe. In this way, we are able to avoid the problem of deleting internal nodes directly.
+
+For detail of this algorithm, please refer to their paper: [Deletion: The curse of the red-black tree](https://www.cs.ox.ac.uk/ralf.hinze/WG2.8/32/slides/red-black-pearl.pdf).
 
 ```F#
 let balance = function
