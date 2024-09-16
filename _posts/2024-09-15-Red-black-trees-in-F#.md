@@ -32,4 +32,34 @@ For the implementation of insertions to our red-black trees, we follow the metho
 
 Violations to the local invariant could appear in one of these four configurations:
 
-![Okasaki-Insertion-Algorithm](image/posts/2024-09-15 okasaki-insertion-1.png)
+![Possible violations to the local invariant](images/posts/2024-09-15 okasaki-insertion-1.png)
+
+After our rotation, we want to obtain this:
+
+![We want to rotate the nodes into a red-rooted treelet](images/posts/2024-09-15 okasaki-insertion-2.png)
+
+The corresponding F# implementation would be:
+
+```F#
+let balance = function
+    | Node(Black, z, Node(Red, y, Node(Red, x, a, b), c), d)
+    | Node(Black, z, Node(Red, x, a, Node(Red, y, b, c)), d)
+    | Node(Black, x, a, Node(Red, y, b, Node(Red, z, c, d))) ->
+        Node(Red, y, Node(Black, x, a, b), Node(Black, z, c, d))
+    | n -> n
+
+let insert (x: 'a) (t: 'a RedBlackTree) : 'a RedBlackTree =
+    let rec ins = function
+        | Leaf Black -> Node(Red, x, Leaf Black, Leaf Black)
+        | Node(color, y, a, b) as s ->
+            if x < y then balance (Node(color, y, ins a, b))
+            elif x > y then balance (Node(color, y, a, ins b))
+            else s
+        | _ -> failwith "unreachable"
+    match ins t with
+    | Node(_, y, a, b) -> Node(Black, y, a, b)
+    | _ -> failwith "unreachable"
+```
+
+The `balance` function works to resolve the violations demonstrated above. The `insert` function first calls the recursive function `ins` to search for the proper location to add the new node, then traverses from the node up to the root while making rotations.
+
