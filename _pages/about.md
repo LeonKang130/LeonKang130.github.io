@@ -7,11 +7,11 @@ redirect_from:
   - /about.html
 ---
 
-I am a first-year graduate student at University of California, Santa Barbara.
+I am a first-year Computer Science Master student at University of California, Santa Barbara. I obtained my Bachelor's degree in Computer Science and Technology at Tsinghua University in 2024.
 
-My research interests include real-time rendering and ray tracing.
+My research interests include real-time rendering and ray tracing. I am also interested in game development.
 
-I am also interested in game development.
+I am currently looking for internships in the summer of 2025.
 
 Selected Experience
 ======
@@ -19,6 +19,8 @@ Selected Experience
 Research
 ------
 From 2022 to 2024, I worked as a **Student Researcher** at Tsinghua University under the supervision of Prof. Kun Xu. I participated in research projects involving **image vectorization** and **subsurface scattering**.
+
+Currently I am participating in research in Computer Graphics under the supervision of Prof. Lingqi Yan.
 
 Internships
 ------
