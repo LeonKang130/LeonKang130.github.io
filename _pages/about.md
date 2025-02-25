@@ -11,6 +11,8 @@ I am a first-year Computer Science Master student at University of California, S
 
 My research interests include real-time rendering and ray tracing. I am also interested in game development.
 
+I have experience programming in C/C++, CUDA, C#/F#, Python and JavaScript and developing applications using OpenGL and Vulkan.
+
 I am currently looking for internships in the summer of 2025.
 
 Selected Experience
